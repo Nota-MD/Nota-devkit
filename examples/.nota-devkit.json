@@ -1,0 +1,20 @@
+{
+  "nota": {
+    "host": "127.0.0.1",
+    "port": 17321,
+    "token": ""
+  },
+  "watch": {
+    "debounceMs": 120,
+    "paths": [
+      "./theme",
+      "./plugin"
+    ],
+    "ignore": [
+      ".git",
+      "node_modules",
+      "dist",
+      "target"
+    ]
+  }
+}

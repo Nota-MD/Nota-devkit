@@ -1,0 +1,15 @@
+:root {
+  --bg-color: #fbfaf7;
+  --text-color: #242424;
+  --accent-color: #b45309;
+}
+
+body {
+  color: var(--text-color);
+  background: var(--bg-color);
+}
+
+#write {
+  max-width: 760px;
+  margin: 0 auto;
+}

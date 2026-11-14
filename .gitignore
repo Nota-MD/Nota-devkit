@@ -1,0 +1,4 @@
+node_modules/
+.nota-devkit/
+*.log
+.DS_Store

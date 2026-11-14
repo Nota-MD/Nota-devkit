@@ -1,0 +1,11 @@
+[plugin]
+id = "example.hello"
+name = "Hello"
+version = "0.1.0"
+api = 2
+entry = "main.lua"
+description = "Minimal DevKit example."
+authors = ["Nota contributors"]
+license = "BSD-2-Clause"
+capabilities = ["ui.notify"]
+langs = ["en", "zh-CN"]
