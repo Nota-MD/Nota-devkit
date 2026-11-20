@@ -27,7 +27,7 @@ export const defaultConfig = {
     title: null,
   },
   plugin: {
-    apiVersion: 2,
+    apiVersion: "v2.3",
   },
 };
 

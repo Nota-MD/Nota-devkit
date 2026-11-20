@@ -25,7 +25,7 @@ import {
 const status = {
   app: "Nota",
   version: "0.14.0-beta",
-  apiVersion: 2,
+  apiVersion: "v2.3",
   active: {
     id: 7,
     title: "Remote note",

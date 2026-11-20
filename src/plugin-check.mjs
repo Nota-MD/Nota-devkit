@@ -120,11 +120,28 @@ export async function validatePlugin(target, options = {}) {
   if (values.id && !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(String(values.id))) {
     issues.push(issue("error", manifestPath, "Plugin id must use ASCII letters, digits, dot, underscore or dash."));
   }
-  const expectedApi = options.apiVersion ?? 2;
-  if (values.api !== undefined && values.api !== expectedApi) {
-    issues.push(
-      issue("error", manifestPath, `Plugin api must be ${expectedApi}, received ${values.api}.`),
-    );
+  const expectedApi = String(options.apiVersion ?? "v2.3");
+  const hostMatch = /^v(\d+)\.(\d+)$/.exec(expectedApi);
+  if (!hostMatch) {
+    issues.push(issue("error", manifestPath, `Host API must use vMAJOR.MINOR, received ${expectedApi}.`));
+  } else if (values.api !== undefined) {
+    const pluginMatch = /^v(\d+)\.(\d+)$/.exec(String(values.api));
+    if (!pluginMatch) {
+      issues.push(
+        issue("error", manifestPath, `Plugin api must use vMAJOR.MINOR, received ${values.api}.`),
+      );
+    } else if (
+      Number(pluginMatch[1]) !== Number(hostMatch[1]) ||
+      Number(pluginMatch[2]) > Number(hostMatch[2])
+    ) {
+      issues.push(
+        issue(
+          "error",
+          manifestPath,
+          `Plugin api ${values.api} is incompatible with host API ${expectedApi}.`,
+        ),
+      );
+    }
   }
   const entry = String(values.entry ?? "main.lua");
   const entryPath = resolve(root, entry);

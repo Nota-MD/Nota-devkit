@@ -2,7 +2,7 @@
 id = "example.hello"
 name = "Hello"
 version = "0.1.0"
-api = 2
+api = "v2.3"
 entry = "main.lua"
 description = "Minimal DevKit example."
 authors = ["Nota contributors"]
