@@ -27,6 +27,7 @@ import {
 } from "./control.mjs";
 import { runPreview } from "./preview.mjs";
 import { call } from "./protocol.mjs";
+import { playInput, readInputScript } from "./input.mjs";
 import { doctor, runWatch } from "./watch.mjs";
 
 function helpText() {
@@ -42,6 +43,7 @@ Usage:
   nota-devkit read [id|active] [options]
   nota-devkit write [id|active] (--text <text> | --file <path>) [options]
   nota-devkit open <absolute-path> [options]
+  nota-devkit input <script.json> [options]
   nota-devkit info [options]
   nota-devkit capture [output.png] [options]
   nota-devkit logs [offset] [options]
@@ -109,7 +111,7 @@ export async function runCli(argv = process.argv.slice(2)) {
   }
   if (![
     "watch", "check", "doctor", "preview", "status", "documents", "read",
-    "write", "open", "info", "capture", "logs", "inspect", "extension", "rpc", "attach",
+    "write", "open", "input", "info", "capture", "logs", "inspect", "extension", "rpc", "attach",
   ].includes(parsed.command)) {
     logger.error(`Unknown command: ${parsed.command}`);
     process.stdout.write(helpText());
@@ -224,6 +226,27 @@ export async function runCli(argv = process.argv.slice(2)) {
       }
       const result = await openDocument(config, path);
       console.log(JSON.stringify(result, null, 2));
+      return 0;
+    } catch (error) {
+      logger.error(error instanceof Error ? error.message : String(error));
+      return 1;
+    }
+  }
+  if (parsed.command === "input") {
+    try {
+      const file = parsed.positionals[0];
+      if (!file) throw new Error("input requires an input script file");
+      const base = config.file ? config.directory : process.cwd();
+      const script = await readInputScript(file, base);
+      const result = await playInput(config, script);
+      if (parsed.flags.json) {
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        logger.success(
+          `Played ${result.played} action(s), ${result.characters} character(s), ` +
+          `${result.durationMs} ms`,
+        );
+      }
       return 0;
     } catch (error) {
       logger.error(error instanceof Error ? error.message : String(error));

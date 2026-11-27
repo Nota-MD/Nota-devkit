@@ -99,6 +99,33 @@ nota-devkit watch . --port 17321 --password 'your debug password'
 nota-devkit doctor --host 127.0.0.1
 ```
 
+## 模拟输入
+
+DevKit 可以向已认证的真实 Nota 编辑区重放输入脚本，适合演示编辑过程和无障碍录制：
+
+```bash
+nota-devkit input ./examples/promo-input.json
+```
+
+脚本支持 `text`、`key`、`shortcut`、`wait`、`focus`、`click` 和
+`command`。文本默认按字素逐个输入，`interval` 控制间隔。示例：
+
+```json
+{
+  "actions": [
+    { "type": "focus" },
+    { "type": "text", "text": "# Nota", "interval": 80 },
+    { "type": "key", "key": "Enter" },
+    { "type": "text", "text": "Local-first writing.", "interval": 35 },
+    { "type": "shortcut", "keys": "Ctrl+B" },
+    { "type": "wait", "ms": 600 }
+  ]
+}
+```
+
+DevKit 不负责抓帧或生成视频。宣传视频应使用系统录屏工具录制真实 Nota
+窗口，同时运行上述输入脚本。
+
 当前会话令牌只保存在 DevKit 进程内存中。重新启动 DevKit 后会用密码重新认证。
 
 ## 预览

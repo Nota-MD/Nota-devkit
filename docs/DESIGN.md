@@ -23,6 +23,7 @@ Nota
   applies document CSS
   transactionally reloads Lua
   renders Markdown through exportHtml
+  replays an authenticated editor input script
   captures its own or another window
 ```
 
@@ -65,5 +66,10 @@ The default listener is loopback-only. A LAN whitelist extension is available fo
 ## Protocol boundaries
 
 The bridge does not expose the password hash, session tokens, arbitrary URL downloads or arbitrary subprocess execution as new primitives. Generic `commands.invoke` delegates to Nota's existing registered commands, which remain responsible for their own path, capability and confirmation checks.
+
+Input playback is an authenticated WebView action stream. It can focus the
+editor, enter text, dispatch keyboard events and run registered editor
+commands. It does not capture frames, launch a recorder or write a video file;
+screen recording stays outside DevKit.
 
 The DevKit is not packaged with Nota. It is an external tool with no build step and no third-party runtime dependency.

@@ -33,6 +33,7 @@ Host: 127.0.0.1:17321
     "plugin.reload",
     "commands.invoke",
     "preview.render",
+    "input.play",
     "capture.window"
   ]
 }
@@ -112,6 +113,7 @@ Malformed requests and authentication failures use non-200 HTTP status codes. A 
 | `documents.open` | `path` | Requests that Nota open a file |
 | `commands.invoke` | `command`, optional `args` | Invokes a registered `nota_*` Tauri command in the WebView |
 | `preview.render` | `markdown`, `title`, optional `themeCss` | Returns a complete HTML document from Nota's export pipeline |
+| `input.play` | `actions`, optional default `interval` | Replays text, key, shortcut, wait, focus, click and editor-command actions in the live editor |
 | `theme.reload` | CSS file or theme directory `path` | Reads CSS and applies it to the running document |
 | `plugin.reload` | file or directory `path` | Transactionally reloads an installed extension |
 | `plugin.inspect` | extension directory or `plugin.toml` path | Parsed manifest and declared capabilities |
@@ -122,6 +124,41 @@ Malformed requests and authentication failures use non-200 HTTP status codes. A 
 | `capture.window` | optional window `title` | PNG path, MIME type and base64 payload |
 
 `commands.invoke` rejects non-`nota_` names and reserved bridge lifecycle commands. Other commands retain their ordinary host permissions; the authenticated bridge is therefore equivalent to local developer access.
+
+## Input playback
+
+`input.play` sends a deterministic action script to the active Nota WebView. It
+uses the same editor focus, text input and keyboard event path as a local user.
+The bridge does not record the screen. Use the operating system recorder when
+the script is used for a demonstration video.
+
+```json
+{
+  "actions": [
+    { "type": "focus" },
+    { "type": "text", "text": "# Nota", "interval": 70 },
+    { "type": "key", "key": "Enter" },
+    { "type": "text", "text": "A focused Markdown workspace.", "interval": 30 },
+    { "type": "shortcut", "keys": "Ctrl+B" },
+    { "type": "wait", "ms": 500 }
+  ]
+}
+```
+
+Supported actions:
+
+| Type | Fields | Behavior |
+|---|---|---|
+| `text` | `text`, optional `interval`, optional `instant` | Inserts native text at the caret; the default is grapheme-by-grapheme playback |
+| `key` | `key`, optional `count`, optional `modifiers` | Dispatches a keydown event and applies an editing fallback for Enter, Backspace, Delete and Tab |
+| `shortcut` | `keys`, optional `count` | Parses forms such as `Ctrl+B`, `Meta+K` and `Mod+S` |
+| `wait` | `ms` | Pauses playback without blocking the UI |
+| `focus` | none | Focuses the active editor |
+| `click` | CSS `selector` | Clicks one element in the Nota UI |
+| `command` | `name`, optional `payload` | Runs an editor command through the active editor handle |
+
+Modifiers are `altKey`, `ctrlKey`, `metaKey` and `shiftKey`. A new playback
+request cancels the previous request in the same window.
 
 ## Preview rendering
 
@@ -142,9 +179,11 @@ Example:
 
 ## Request limits
 
-- Body limit: 4 MiB
+- Body limit: 64 MiB
 - Concurrent requests: 32
 - WebView command timeout: 30 seconds
+- Input playback timeout: 15 minutes
+- Input playback limits: 10,000 actions and 1,000,000 text bytes
 - Session lifetime: 12 hours
 - Authentication failures: 8 per IP per minute
 

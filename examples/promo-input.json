@@ -1,0 +1,12 @@
+{
+  "actions": [
+    { "type": "focus" },
+    { "type": "wait", "ms": 500 },
+    { "type": "text", "text": "# Nota", "interval": 90 },
+    { "type": "key", "key": "Enter" },
+    { "type": "text", "text": "A focused Markdown workspace.", "interval": 35 },
+    { "type": "key", "key": "Enter" },
+    { "type": "text", "text": "Fast, local and extensible.", "interval": 35 },
+    { "type": "wait", "ms": 800 }
+  ]
+}
